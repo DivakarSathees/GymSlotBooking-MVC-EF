@@ -1,0 +1,30 @@
+@model List<Slot>
+
+<h1>Available Slots</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Time</th>
+            <th>Duration</th>
+            <th>Capacity</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var slot in Model)
+        {
+            <tr>
+                <td>@slot.Time</td>
+                <td>@slot.Duration</td>
+                <td>@slot.Capacity</td>
+                <td>
+                    <a asp-controller="Booking" asp-action="Book" asp-route-id="@slot.SlotID">Book</a>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Create">Create New Slot</a>
+

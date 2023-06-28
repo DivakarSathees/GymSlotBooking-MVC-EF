@@ -1,0 +1,15 @@
+@model Slot
+
+<h1>Book Slot</h1>
+
+<p>Slot Time: @Model.Time</p>
+<p>Slot Duration: @Model.Duration</p>
+
+<form asp-action="Book" method="post">
+    <input type="hidden" asp-for="SlotID" value="@Model.SlotID" />
+    <div>
+        <label for="userId">User ID:</label>
+        <input type="text" id="userId" name="userId" required />
+    </div>
+    <button type="submit">Book</button>
+</form>

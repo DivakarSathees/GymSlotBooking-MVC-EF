@@ -1,0 +1,25 @@
+@model List<Booking>
+
+<h1>Bookings</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Slot Time</th>
+            <th>Slot Duration</th>
+            <th>User ID</th>
+            <!-- <th>Booking Time</th> -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model)
+        {
+            <tr>
+                <td>@booking.Slot.Time</td>
+                <td>@booking.Slot.Duration</td>
+                <td>@booking.UserID</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a asp-controller="Slot" asp-action="Index">back to home</a>

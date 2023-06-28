@@ -1,0 +1,19 @@
+@model Slot
+
+<h1>Create Slot</h1>
+
+<form asp-action="Create" method="post">
+    <div>
+        <label asp-for="Time">Time:</label>
+        <input asp-for="Time" type="datetime" required>
+    </div>
+    <div>
+        <label asp-for="Duration">Duration (minutes):</label>
+        <input asp-for="Duration" type="number" required>
+    </div>
+    <div>
+        <label asp-for="Capacity">Capacity:</label>
+        <input asp-for="Capacity" type="number" required>
+    </div>
+    <button type="submit">Create</button>
+</form>
