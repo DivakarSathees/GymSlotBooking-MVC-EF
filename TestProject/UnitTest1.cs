@@ -20,7 +20,6 @@ namespace gymI.Tests
         [SetUp]
         public void Setup()
         {
-            // In-memory database for testing
             var options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
@@ -42,7 +41,6 @@ namespace gymI.Tests
         [Test]
         public void Index_ReturnsViewWithBookings()
         {
-            // Arrange
             var bookings = new List<Booking>
             {
                 new Booking { Slot = new Slot() },
@@ -51,10 +49,8 @@ namespace gymI.Tests
             _context.Bookings.AddRange(bookings);
             _context.SaveChanges();
 
-            // Act
             var result = _controller.Index() as ViewResult;
-
-            // Assert
+            Console.WriteLine(bookings.Count);
             Assert.IsNotNull(result);
             Assert.AreEqual(bookings.Count, (result.Model as List<Booking>)?.Count);
         }
@@ -62,7 +58,6 @@ namespace gymI.Tests
         [Test]
         public void Book_WithValidSlotId_ReturnsViewWithSlot()
         {
-            // Arrange
             var slot = new Slot { SlotID = 1 };
             _context.Slots.Add(slot);
             _context.SaveChanges();
@@ -70,7 +65,6 @@ namespace gymI.Tests
             // Act
             var result = _controller.Book(slot.SlotID) as ViewResult;
 
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(slot, result.Model as Slot);
         }
@@ -78,10 +72,8 @@ namespace gymI.Tests
         [Test]
         public void Book_WithInvalidSlotId_ReturnsNotFound()
         {
-            // Act
             var result = _controller.Book(1) as NotFoundResult;
 
-            // Assert
             Assert.IsNotNull(result);
         }
 
@@ -94,10 +86,8 @@ namespace gymI.Tests
             _context.Slots.Add(slot);
             _context.SaveChanges();
 
-            // Act
             var result = _controller.Book(slot.SlotID, userId) as RedirectToActionResult;
 
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual("Index", result.ActionName);
             Assert.AreEqual(1, _context.Bookings.Count());
@@ -109,16 +99,13 @@ namespace gymI.Tests
          [Test]
         public void Book_WithValidSlotAndCheckReduce_Capacity()
         {
-            // Arrange
             var slot = new Slot { SlotID = 1, Capacity = 4 };
             var userId = 1;
             _context.Slots.Add(slot);
             _context.SaveChanges();
 
-            // Act
             var result = _controller.Book(slot.SlotID, userId) as RedirectToActionResult;
 
-            // Assert
             Assert.IsNotNull(result);
             // Assert.AreEqual("Index", result.ActionName);
             // Assert.AreEqual(1, _context.Bookings.Count());
@@ -130,10 +117,8 @@ namespace gymI.Tests
         [Test]
         public void Book_WithInvalidSlot_ReturnsNotFound()
         {
-            // Act
             var result = _controller.Book(1, 1) as NotFoundResult;
 
-            // Assert
             Assert.IsNotNull(result);
         }
 
@@ -169,23 +154,19 @@ namespace gymI.Tests
         [Test]
         public void Book_WithFullSlot_ThrowsSlotBookingExceptionWithMessage()
         {
-            // Arrange
             var slot = new Slot { SlotID = 1, Capacity = 0 };
             var userId = 1;
             _context.Slots.Add(slot);
             _context.SaveChanges();
 
-            // Act & Assert
             var exception=Assert.Throws<SlotBookingException>(() => _controller.Book(slot.SlotID, userId));
 
-            // Assert
             Assert.AreEqual("Slot is full.", exception.Message);
         }
 
         [Test]
         public void Book_WithExistingBooking_ThrowsSlotBookingExceptionWithMessage()
         {
-            // Arrange
             var slot = new Slot { SlotID = 1, Capacity = 1 };
             var userId = 1;
             var booking = new Booking { SlotID = slot.SlotID, UserID = userId };
@@ -193,7 +174,6 @@ namespace gymI.Tests
             _context.Bookings.Add(booking);
             _context.SaveChanges();
 
-            // Act & Assert
             var ex= Assert.Throws<SlotBookingException>(() => _controller.Book(slot.SlotID, userId));
             // Console.WriteLine(ex);
             Assert.AreEqual("You have already booked this slot.", ex.Message);
@@ -202,7 +182,6 @@ namespace gymI.Tests
         [Test]
         public void Index_ReturnsViewWithListOfSlots()
         {
-            // Arrange
             var slots = new List<Slot>
             {
                 new Slot { SlotID = 1, Time = DateTime.Parse("10:00 AM"), Duration = 60, Capacity = 5 },
@@ -211,12 +190,64 @@ namespace gymI.Tests
             _context.Slots.AddRange(slots);
             _context.SaveChanges();
 
-            // Act
             var result = _slotcontroller.Index() as ViewResult;
 
-            // Assert
             Assert.IsNotNull(result);
             Assert.AreEqual(slots.Count, (result.Model as List<Slot>)?.Count);
-        }        
+        }     
+
+        [Test]
+public void SlotClassExists()
+{
+    var slot = new Slot();
+
+    Assert.IsNotNull(slot);
+}
+
+[Test]
+public void BookingClassExists()
+{
+    var booking = new Booking();
+
+    Assert.IsNotNull(booking);
+}
+
+[Test]
+public void SlotContainsCollectionOfBooking()
+{
+    var slot = new Slot();
+    var bookings = new List<Booking>
+    {
+        new Booking(),
+        new Booking()
+    };
+
+    slot.Bookings = bookings;
+
+    Assert.AreEqual(bookings.Count, slot.Bookings.Count);
+}
+
+[Test]
+public void ApplicationDbContextContainsDbSetSlotProperty()
+{
+    // var context = new ApplicationDbContext();
+
+    var propertyInfo = _context.GetType().GetProperty("Slots");
+
+    Assert.IsNotNull(propertyInfo);
+    Assert.AreEqual(typeof(DbSet<Slot>), propertyInfo.PropertyType);
+}
+
+[Test]
+public void ApplicationDbContextContainsDbSetBookingProperty()
+{
+    // var context = new ApplicationDbContext();
+
+    var propertyInfo = _context.GetType().GetProperty("Bookings");
+
+    Assert.IsNotNull(propertyInfo);
+    Assert.AreEqual(typeof(DbSet<Booking>), propertyInfo.PropertyType);
+}
+   
     }
 }
